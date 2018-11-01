@@ -168,7 +168,8 @@ public class HashTable {
                 temp = temp.getNext();
                 if(temp.getKey() == key) {
                     if(temp.getNext() != null){
-                        pred.setNext(temp.getNext());
+                        pred.setNext(temp.getNext());                  
+                        return;
                     } else {
                         pred.setNext(null);
                     }
