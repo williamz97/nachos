@@ -186,28 +186,23 @@ public class KThread {
 	Lib.debug(dbgThread, "Finishing thread: " + currentThread.toString());
 	
 	Machine.interrupt().disable();
-
+	
+	// Checks if readyQueue has a thread waiting, if it does run it
+	// if not then sleep
+	ThreadQueue readyQueue = currentThread.readyQueue; 
+ 	KThread whowaitsforMe = readyQueue.nextThread();
+ 	if(whowaitsforMe != null){
+ 		whowaitsforMe.run();
+ 	}
+	
 	Machine.autoGrader().finishingCurrentThread();
 
 	Lib.assertTrue(toBeDestroyed == null);
+	
 	toBeDestroyed = currentThread;
-
+	
 	currentThread.status = statusFinished;
-	System.out.println("I RAN ");
-	System.out.println("currentThread: " + currentThread.name);
-	System.out.println("currentThread Status: " + currentThread.status);
-	System.out.println("Who Waits: " + currentThread.whowaitsforMe);
-	System.out.println("I ENDED");
 	
-
-	/*
-	 *
-	 * (CHECK READY METHOD)
-	 * 
-	 * 
-	 */
-	
-
 	sleep();
     }
 
@@ -291,30 +286,16 @@ public class KThread {
 	Lib.debug(dbgThread, "Joining to thread: " + toString());
 	Lib.assertTrue(this != currentThread);
 	
-	// A RUNS AND CALL B 
-	// A {
-	//  ......
-	//	B.join
-	// }
-	/*
-	System.out.println("- - - - - I ran .join()");
-	System.out.println("This: " + this.name);
-	System.out.println("Current Thread: " + currentThread);
-	System.out.println("WhoWaitsForMe: " + whowaitsforMe);
-	System.out.println();
-	*/
-	Machine.interrupt().disable();  // Disable interrupts
-	currentThread.sleep(); // Sleep/Block Current Thread
-	whowaitsforMe = currentThread; // Hold Calling Thread
-	this.run(); //Run B Thread
-	if(this.status == statusFinished){ // If B Finished
-		Machine.interrupt().enable();  // Enable interrupts
-		whowaitsforMe.finish(); // Finish A
-	}
 	
-
-    }
-
+	Machine.interrupt().disable();
+	this.ready();
+	whowaitsforMe = currentThread;  // Store currentThread into whowaitsforMe
+	whowaitsforMe.ready();          // put whowaitsforMe in readyQueue
+	currentThread.sleep();          // Put currentThread to sleep which then runs whowaitforMe
+	Machine.interrupt().enable();
+	
+	
+  }
     /**
      * Create the idle thread. Whenever there are no threads ready to be run,
      * and <tt>runNextThread()</tt> is called, it will run the idle thread. The
@@ -375,10 +356,7 @@ public class KThread {
 	Machine.yield();
 
 	currentThread.saveState();
-	if(currentThread.name == "child1"){
-		System.out.println("Current Thread From .run: " + currentThread);
-		System.out.println("Who Wait from .run: " + currentThread.whowaitsforMe);
-	}
+	
 	Lib.debug(dbgThread, "Switching from: " + currentThread.toString()
 		  + " to: " + toString());
 
@@ -486,6 +464,12 @@ public class KThread {
     private static KThread toBeDestroyed = null;
     private static KThread idleThread = null;
     
+    // Place Join test code in the KThread class and invoke test methods
+    // from KThread.selfTest().
+
+    // Simple test for the situation where the child finishes before
+    // the parent calls join on it.
+    
     private static void joinTest1 () {
     	KThread child1 = new KThread( new Runnable () {
     		public void run() {
@@ -510,11 +494,7 @@ public class KThread {
     	}
 }
 
-// Place Join test code in the KThread class and invoke test methods
-// from KThread.selfTest().
 
-// Simple test for the situation where the child finishes before
-// the parent calls join on it.
 
 
 
