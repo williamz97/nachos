@@ -186,7 +186,7 @@ public class Condition2 {
     }
     
     public static void main(String[] args) {
-		//cvTest5();
+		cvTest5();
     	//selfTest();
 	}
 }
