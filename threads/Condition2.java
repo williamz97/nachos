@@ -36,10 +36,10 @@ public class Condition2 {
     public void sleep() {
     
     	Lib.assertTrue(conditionLock.isHeldByCurrentThread());
-
-    	conditionLock.release();  // Allow other threads to acquire
     	
     	Machine.interrupt().disable();  // Disable interrupts
+    	
+    	conditionLock.release();  // Allow other threads to acquire
     	
     	// Adds currentThread to waitQueue to be accessed later
     	waitQueue.add(KThread.currentThread());
