@@ -1,5 +1,5 @@
 package nachos.threads;
-import java.util.PriorityQueue;
+import java.util.*;
 import nachos.machine.*;
 
 /**
@@ -28,19 +28,24 @@ public class Alarm {
 	 */
 	public void timerInterrupt() {
 		long currentTime = Machine.timer().getTime();
-		boolean intStatus = Machine.interrupt().disable();
-		// wake up threads
-		while (!waitQueue.isEmpty() && waitQueue.peek().waketime <= currentTime){
-			ThreadTime threadTime = waitQueue.poll();
-			KThread thread = threadTime.thread;
-			if (thread != null){
-				thread.ready();
-			}
+		System.out.println("Time: " + currentTime);
+		Machine.interrupt().disable();
+		Lib.assertTrue(Machine.interrupt().disabled());
+		//Machine.interrupt().disable();
+		//System.out.println("Self test testing");
+		while(!waitQueue.isEmpty()) {
+			waitQueue.remove();
+			//ThreadTimer threadTimer = waitQueue.poll();
+			//KThread kThread = threadTimer.thread;
+			/*if(kThread != null) {
+				kThread.ready();
+			}*/
 		}
-		// tell current thread to yield 
+		Machine.interrupt().enable();
 		KThread.yield();
-		Machine.interrupt().restore(intStatus);
 	}
+
+
 
 	/**
 	 * Put the current thread to sleep for at least <i>x</i> ticks,
@@ -58,41 +63,38 @@ public class Alarm {
 	 */
 	public void waitUntil(long x) {
 		// for now, cheat just to get something working (busy waiting is bad)
+		Machine.interrupt().disable();
 		long wakeTime = Machine.timer().getTime() + x;
-		KThread thread = KThread.currentThread();
-		ThreadTime threadTime = new ThreadTime(thread, wakeTime);
-		boolean intStatus = Machine.interrupt().disable();
-		waitQueue.add(threadTime);
-		thread.sleep();
-		Machine.interrupt().restore(intStatus);
+		KThread kThread = KThread.currentThread();
+		ThreadTimer threadTimer = new ThreadTimer(kThread, wakeTime);
+		if(x <= 0)
+			return;
+		waitQueue.add(threadTimer);
+		//while (wakeTime > Machine.timer().getTime()) {}
+		KThread.sleep();
+		Machine.interrupt().enable();
 	}
+	//Implementing comparable for the Priority Queue 
+	private class ThreadTimer implements Comparable<ThreadTimer>{
+		private KThread thread;
+		private long waketime;
+		public ThreadTimer(KThread kThread, long wakeTime) {
+			this.thread = kThread;
+			this.waketime = wakeTime; 
+		}
+		public int compareTo(ThreadTimer threadTime) {
+			if (this.waketime > threadTime.waketime) {
+				return 1;
+			}else if (this.waketime < threadTime.waketime) {
+				return -1;
+			}else 
+				return 0;
+		}	
+	}
+	//makes sure priority queue is in waketime order 
+	PriorityQueue<ThreadTimer> waitQueue = new PriorityQueue<ThreadTimer>();
 	
-	// Inner private class implements Comparable
-    private class ThreadTime  implements Comparable<ThreadTime>{
-    	public ThreadTime (KThread thread, long waketime){
-    		this.thread = thread;
-    		this.waketime = waketime;
-    	}
-    	
-    	public int compareTo(ThreadTime threadTime){
-    		if (this.waketime > threadTime.waketime){
-    			return 1;
-    		}else{ if (this.waketime < threadTime.waketime){
-    			return -1;
-    		}else{ 
-    			return 0;
-    		}
-    		}
-    	}
-    	
-    	private KThread thread;
-    	private long waketime;
-    }
-    
-    // ascending waketime order
-    private PriorityQueue<ThreadTime> waitQueue = new PriorityQueue<ThreadTime>();
 	// Add Alarm testing code to the Alarm class
-
 	public static void alarmTest1() {
 		int durations[] = {1000, 10*1000, 100*1000};
 		long t0, t1;
@@ -112,5 +114,5 @@ public class Alarm {
 		alarmTest1();
 
 		// Invoke your other test methods here ...
-	}
+	}	
 }
