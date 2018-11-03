@@ -43,12 +43,13 @@ public class Condition2 {
     	
     	// Adds currentThread to waitQueue to be accessed later
     	waitQueue.add(KThread.currentThread());
+    
     	KThread.sleep(); // Sleep currentThread
     	
     	Machine.interrupt().enable(); // Enable interrupts
     	
     	conditionLock.acquire();  // Acquire lock
-	
+    
     }
 
     /**
@@ -64,7 +65,7 @@ public class Condition2 {
     	// and remove it from the waitQueue
     	
     	if(!waitQueue.isEmpty()) {
-    		((KThread)waitQueue.removeFirst()).ready();
+    		waitQueue.removeFirst().ready();
     	}
     	
     	Machine.interrupt().enable(); // Enable Interrupts
@@ -185,7 +186,7 @@ public class Condition2 {
     }
     
     public static void main(String[] args) {
-		cvTest5();
+		//cvTest5();
     	//selfTest();
 	}
 }
