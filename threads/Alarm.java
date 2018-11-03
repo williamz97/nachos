@@ -27,8 +27,8 @@ public class Alarm {
 	 * that should be run.
 	 */
 	public void timerInterrupt() {
-		long currentTime = Machine.timer().getTime();
-		System.out.println("Time: " + currentTime);
+		//long currentTime = Machine.timer().getTime();
+		//System.out.println("Time: " + currentTime);
 		Machine.interrupt().disable();
 		Lib.assertTrue(Machine.interrupt().disabled());
 		ThreadTimer nextThread;
@@ -104,13 +104,26 @@ public class Alarm {
 			System.out.println ("alarmTest1: waited for " + (t1 - t0) + " ticks");
 		}
 	}
+	
+	public static void alarmTest2() {
+		int durations [] = {0}; 
+		long t0, t1; 
+		for (int d : durations) {
+		t0 = Machine.timer().getTime();
+		ThreadedKernel.alarm.waitUntil (d);
+		t1 = Machine.timer().getTime();
+		System.out.println ("alarmTest2: waited for " + (t1 - t0) + " ticks");
+		}
+	}
 
 	// Implement more test methods here ...
 
 	// Invoke Alarm.selfTest() from ThreadedKernel.selfTest()
 	public static void selfTest() {
 		alarmTest1();
+		alarmTest2();
 
 		// Invoke your other test methods here ...
 	}	
+	
 }
