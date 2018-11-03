@@ -31,15 +31,9 @@ public class Alarm {
 		System.out.println("Time: " + currentTime);
 		Machine.interrupt().disable();
 		Lib.assertTrue(Machine.interrupt().disabled());
-		//Machine.interrupt().disable();
-		//System.out.println("Self test testing");
-		while(!waitQueue.isEmpty()) {
-			waitQueue.remove();
-			//ThreadTimer threadTimer = waitQueue.poll();
-			//KThread kThread = threadTimer.thread;
-			/*if(kThread != null) {
-				kThread.ready();
-			}*/
+		ThreadTimer nextThread;
+		while((nextThread = waitQueue.peek()) != null && nextThread.wakeTime() <= Machine.timer().getTime()) {
+			waitQueue.poll().thread().ready();
 		}
 		Machine.interrupt().enable();
 		KThread.yield();
@@ -62,15 +56,13 @@ public class Alarm {
 	 * @see	nachos.machine.Timer#getTime()
 	 */
 	public void waitUntil(long x) {
+		//while (wakeTime > Machine.timer().getTime()) {}
 		// for now, cheat just to get something working (busy waiting is bad)
-		Machine.interrupt().disable();
 		long wakeTime = Machine.timer().getTime() + x;
 		KThread kThread = KThread.currentThread();
 		ThreadTimer threadTimer = new ThreadTimer(kThread, wakeTime);
-		if(x <= 0)
-			return;
+		Machine.interrupt().disable();
 		waitQueue.add(threadTimer);
-		//while (wakeTime > Machine.timer().getTime()) {}
 		KThread.sleep();
 		Machine.interrupt().enable();
 	}
@@ -90,6 +82,12 @@ public class Alarm {
 			}else 
 				return 0;
 		}	
+		public long wakeTime() {
+			return waketime;
+		}
+		public KThread thread() {
+			return thread;
+		}
 	}
 	//makes sure priority queue is in waketime order 
 	PriorityQueue<ThreadTimer> waitQueue = new PriorityQueue<ThreadTimer>();
