@@ -286,14 +286,12 @@ public class KThread {
 	Lib.debug(dbgThread, "Joining to thread: " + toString());
 	Lib.assertTrue(this != currentThread);
 	
-	
 	Machine.interrupt().disable();
 	this.ready();
 	whowaitsforMe = currentThread;  // Store currentThread into whowaitsforMe
 	whowaitsforMe.ready();          // put whowaitsforMe in readyQueue
 	currentThread.sleep();          // Put currentThread to sleep which then runs whowaitforMe
 	Machine.interrupt().enable();
-	
 	
   }
     /**

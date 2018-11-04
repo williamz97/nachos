@@ -104,7 +104,7 @@ public class Condition2 {
     	
     	final Lock testLock = new Lock();
     	final Condition2 test = new Condition2(testLock);
-    	
+ 
     	KThread sleepTest = new KThread(new Runnable () {
     		
     		public void run() {
@@ -122,9 +122,9 @@ public class Condition2 {
     		
     		public void run() {
     			testLock.acquire();  // Locks so other test can't run concurrently
-    		    System.out.println("----------Testing sleep Method----------");
+    		    System.out.println("----------Testing wake Method----------");
     		    test.wake();
-    		    System.out.println("----------sleep test passed----------");
+    		    System.out.println("----------wake test passed----------");
     		    testLock.release();  // Release lock for another test to run
     		}
     	});
@@ -135,14 +135,15 @@ public class Condition2 {
     		
     		public void run() {
     			testLock.acquire();  // Locks so other test can't run concurrently
-    		    System.out.println("----------Testing sleep Method----------");
+    		    System.out.println("----------Testing wakeAll Method----------");
     		    test.wakeAll();
-    		    System.out.println("----------sleep test passed----------");
+    		    System.out.println("----------wakeAll test passed----------");
     		    testLock.release();  // Release lock for another test to run
     		}
     	});
     	wakeAllTest.fork();
-    }
+    	
+    } 
     
 
     // Place Condition2 test code inside of the Condition2 class.
@@ -204,13 +205,9 @@ public class Condition2 {
         // implemented join yet, then comment out the calls to join
         // and instead uncomment the loop with yield; the loop has the
         // same effect, but is a kludgy way to do it.
-        consumer.join();
-        producer.join();
-        //for (int i = 0; i < 50; i++) { KThread.currentThread().yield(); }
+        //consumer.join();
+        //producer.join();
+        for (int i = 0; i < 50; i++) { KThread.currentThread().yield(); }
     }
-    
-    public static void main(String[] args) {
-		//cvTest5();
-    	//selfTest();
-	}
+   
 }
