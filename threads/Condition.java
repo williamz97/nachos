@@ -163,9 +163,5 @@ public class Condition {
         producer.join();
         //for (int i = 0; i < 50; i++) { KThread.currentThread().yield(); }
     }
-    
-    public static void main(String[] args) {
-		cvTest5();
-    	//selfTest();
-	}
+
 }
