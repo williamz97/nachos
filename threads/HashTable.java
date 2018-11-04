@@ -236,14 +236,51 @@ public class HashTable{
 
     void batch(int n_ops, ThreadOperation[] ops){
 
+<<<<<<< HEAD
         int thread_sem__var = 0;    // BINARY SEMAPHORE VAR INIT
+=======
+        thread_sem__var = 0;    // BINARY SEMAPHORE VAR INIT
+>>>>>>> 7eb8fbd88bcb6f40976f9196c6e76be3759cbe0d
         // LOCK THE key
         // K = KEY
 
         for(int i = 0; i < n_ops; i++){
             //CREATE THREAD
         }
+<<<<<<< HEAD
  
+=======
+        for(int i = 0; i < ops.length; i++){
+            // ASSIGN THREAD TO OP
+
+
+            // THREAD 1 INSERT 100
+
+            // THREAD 2 REMOVES 100
+
+        /*
+
+            lock()
+
+            if (ops[i].op == INSERT){
+                HTable.insert(op.k , op.result);
+                unlock();
+            }
+
+            if (ops[i].op == REMOVE){
+                HTable.remove(op.k)
+                unlock()
+            }
+
+            if (ops[i].op == QUERY}{
+                HTable.get(op.k)
+                unlock()
+            }
+
+         */
+        }
+
+>>>>>>> 7eb8fbd88bcb6f40976f9196c6e76be3759cbe0d
     }
 
 
