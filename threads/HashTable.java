@@ -17,6 +17,8 @@ class Node {
     }
 }
 
+
+
 enum OperationType{
     INSERT,
     REMOVE,
@@ -236,81 +238,75 @@ public class HashTable{
 
     void batch(int n_ops, ThreadOperation[] ops){
 
-<<<<<<< HEAD
-        int thread_sem__var = 0;    // BINARY SEMAPHORE VAR INIT
-=======
-        thread_sem__var = 0;    // BINARY SEMAPHORE VAR INIT
->>>>>>> 7eb8fbd88bcb6f40976f9196c6e76be3759cbe0d
-        // LOCK THE key
-        // K = KEY
+        ArrayList<KThread> ThreadList = new ArrayList();   // HOLD THREADS
+        ArrayList<Integer> ThreadKeys = new ArrayList();   // HOLD KEYS
 
-        for(int i = 0; i < n_ops; i++){
-            //CREATE THREAD
-        }
-<<<<<<< HEAD
- 
-=======
-        for(int i = 0; i < ops.length; i++){
-            // ASSIGN THREAD TO OP
-
-
-            // THREAD 1 INSERT 100
-
-            // THREAD 2 REMOVES 100
-
-        /*
-
-            lock()
-
-            if (ops[i].op == INSERT){
-                HTable.insert(op.k , op.result);
-                unlock();
-            }
-
-            if (ops[i].op == REMOVE){
-                HTable.remove(op.k)
-                unlock()
-            }
-
-            if (ops[i].op == QUERY}{
-                HTable.get(op.k)
-                unlock()
-            }
-
-         */
+        // MAKE THREADS
+        for (int i = 0; i < n_ops; i++){
+            KThread thread = new KThread(new Runnable () {
+                public void run() {
+                    System.out.println(this);
+                }
+            });
+            thread.fork();
+            ThreadList.add(thread);
         }
 
->>>>>>> 7eb8fbd88bcb6f40976f9196c6e76be3759cbe0d
+        // SPAWN THREADS IN CASES INSTEAD
+
+        System.out.println("THREAD LIST SIZE: " + ThreadList.size());
+
+
+
+        for (int i = 0; i < ops.length; i++){
+
+            int index = ops[i].k;    // INDEX CORRESPONDING TO EACH PAIR ITERATION OF OPERATION AND THRED
+            ThreadKeys.add(index);   // ADD KEY TO WATCH LIST
+
+            //lock()
+
+            boolean isInList = false; // IS CURRENT KEY IN WATCH LIST
+
+            for (int j = 0; j < ThreadKeys.size();j++){ // CHECK IF IN WATCH LIST
+                if(ThreadKeys.get(j) == index){
+                    isInList = true;
+                }
+            }
+
+            while(! isInList){      // FALSE BUSY WAITING TO HOLD THREAD
+
+            }
+
+            ThreadKeys.add(index);  // ADD CURRENT KEY TO WATCH LIST
+
+            // IF STATEMENT TO CHOOSE CORRECT OPERATION
+
+            if(ops[i].op == OperationType.INSERT){
+                ThreadList.get(i).fork();
+                //HTable.insert(ops[i].k,ops[i].result)
+            }
+            if(ops[i].op == OperationType.REMOVE){
+                //ThreadList.get(i)
+                // HTable.remove(ops[i].k)
+            }
+            if(ops[i].op == OperationType.QUERY){
+                //ThreadList.get(i)
+                // HTable.get(ops[i].k)
+            }
+
+            // REMOVE INDEX FROM WATCH LIST
+            for(int j = 0; j < ThreadKeys.size(); j++){
+                if(ThreadKeys.get(i) == index){
+                    ThreadKeys.remove(i);
+                }
+            }
+            //unlock()
+        }
     }
 
-
-    public static void main(String[] args){
+    public static void selfTest(){
 
         HashTable HTable = new HashTable(5);
-
-        System.out.println("HashTable runs");
-        HTable.batch(6,null);
-        
-        HTable.insert(1, 2);
-        // System.out.println("Inserted 1:2");
-        HTable.insert(3,4);
-        //System.out.println("Inserted 3:4");
-        HTable.insert(5, 6);
-        //System.out.println("Inserted 5:6");
-        HTable.insert(7, 8);
-        //System.out.println("Inserted 7:8");
-        HTable.insert(9, 10);
-        //System.out.println("Inserted 9:10");
-        HTable.insert(11, 12);
-        //System.out.println("Inserted 11:12");
-
-
-        System.out.println();
-        System.out.println();
-
-        System.out.println(".batch Test");
-        System.out.println(" - - - - - - - - - -");
-
 
         ThreadOperation op0 = new ThreadOperation();
         op0.op = OperationType.INSERT;
@@ -322,6 +318,7 @@ public class HashTable{
         op1.op = OperationType.REMOVE;
         op1.k = 20;
         // SHOULD PASS
+
 
         ThreadOperation op2 = new ThreadOperation();
         op2.op = OperationType.QUERY;
@@ -341,7 +338,34 @@ public class HashTable{
 
         ThreadOperation[] thread_ops = new ThreadOperation[] {op0,op1,op2,op3,op4};
 
+
         HTable.batch(5,thread_ops);
+    }
+
+
+    public static void main(String[] args){
+
+        HashTable HTable = new HashTable(5);
+
+        HTable.insert(1, 2);
+        // System.out.println("Inserted 1:2");
+        HTable.insert(3,4);
+        //System.out.println("Inserted 3:4");
+        HTable.insert(5, 6);
+        //System.out.println("Inserted 5:6");
+        HTable.insert(7, 8);
+        //System.out.println("Inserted 7:8");
+        HTable.insert(9, 10);
+        //System.out.println("Inserted 9:10");
+        HTable.insert(11, 12);
+        //System.out.println("Inserted 11:12");
+
+
+        System.out.println();
+        System.out.println();
+
+        System.out.println(".batch Test");
+        System.out.println(" - - - - - - - - - -");
 
 
 
