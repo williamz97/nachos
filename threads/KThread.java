@@ -278,7 +278,6 @@ public class KThread {
      */
     public void join() {
     
-<<<<<<< HEAD
     	Lib.debug(dbgThread, "Joining to thread: " + toString());
     	Lib.assertTrue(this != currentThread);
 	
@@ -290,19 +289,6 @@ public class KThread {
     	Machine.interrupt().enable();
     	
     }
-=======
-	Lib.debug(dbgThread, "Joining to thread: " + toString());
-	Lib.assertTrue(this != currentThread);
-	
-	Machine.interrupt().disable();
-	this.ready();
-	whowaitsforMe = currentThread;  // Store currentThread into whowaitsforMe
-	whowaitsforMe.ready();          // put whowaitsforMe in readyQueue
-	currentThread.sleep();          // Put currentThread to sleep which then runs whowaitforMe
-	Machine.interrupt().enable();
-	
-  }
->>>>>>> 77063990f0849648ba25bd04e722867902d193cb
     /**
      * Create the idle thread. Whenever there are no threads ready to be run,
      * and <tt>runNextThread()</tt> is called, it will run the idle thread. The
@@ -501,6 +487,7 @@ public class KThread {
     	Lib.assertTrue((child1.status == statusFinished), " Expected child1 to be finished.");
     	}
 }
+
 
 
 
