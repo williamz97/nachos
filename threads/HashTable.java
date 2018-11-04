@@ -233,11 +233,48 @@ public class HashTable{
         return this;
     }
 
+
     void batch(int n_ops, ThreadOperation[] ops){
-    	KThread child1 = new KThread( new Runnable () { 
-    		public void run() { 
-    			System.out.println("I (heart) Nachos!"); } });  
+
+        thread_sem__var = 0;    // BINARY SEMAPHORE VAR INIT
+        // LOCK THE key
+        // K = KEY
+
+        for(int i = 0; i < n_ops; i++){
+            //CREATE THREAD
+        }
+        for(int i = 0; i < ops.length; i++){
+            // ASSIGN THREAD TO OP
+
+
+            // THREAD 1 INSERT 100
+
+            // THREAD 2 REMOVES 100
+
+        /*
+
+            lock()
+
+            if (ops[i].op == INSERT){
+                HTable.insert(op.k , op.result);
+                unlock();
+            }
+
+            if (ops[i].op == REMOVE){
+                HTable.remove(op.k)
+                unlock()
+            }
+
+            if (ops[i].op == QUERY}{
+                HTable.get(op.k)
+                unlock()
+            }
+
+         */
+        }
+
     }
+
 
     public static void main(String[] args){
 
@@ -262,6 +299,42 @@ public class HashTable{
 
         System.out.println();
         System.out.println();
+
+        System.out.println(".batch Test");
+        System.out.println(" - - - - - - - - - -");
+
+
+        ThreadOperation op0 = new ThreadOperation();
+        op0.op = OperationType.INSERT;
+        op0.k = 20;
+        op0.result = 21;
+        // SHOULD PASS
+
+        ThreadOperation op1 = new ThreadOperation();
+        op1.op = OperationType.REMOVE;
+        op1.k = 20;
+        // SHOULD PASS
+
+        ThreadOperation op2 = new ThreadOperation();
+        op2.op = OperationType.QUERY;
+        op2.k = 100;
+        // SHOULD FAIL
+
+        ThreadOperation op3 = new ThreadOperation();
+        op3.op = OperationType.REMOVE;
+        op3.k = 200;
+        // SHOULD FAIL
+
+        ThreadOperation op4 = new ThreadOperation();
+        op4.op = OperationType.INSERT;
+        op4.k = 300;
+        op4.result = 301;
+        // SHOULD PASS
+
+        ThreadOperation[] thread_ops = new ThreadOperation[] {op0,op1,op2,op3,op4};
+
+        HTable.batch(5,thread_ops);
+
 
 
 		/*
