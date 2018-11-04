@@ -184,16 +184,11 @@ public class KThread {
 	public static void finish() {
 
 	Lib.debug(dbgThread, "Finishing thread: " + currentThread.toString());
-	
 	Machine.interrupt().disable();
 	
-	// Checks if readyQueue has a thread waiting, if it does run it
-	// if not then sleep
-	ThreadQueue readyQueue = currentThread.readyQueue; 
- 	KThread whowaitsforMe = readyQueue.nextThread();
- 	if(whowaitsforMe != null){
- 		whowaitsforMe.run();
- 	}
+	if(currentThread.whowaitsforMe != null){    // if currentThread's whowaitsforMe  
+		currentThread.whowaitsforMe.ready();    // isn't empty then wake  
+	}
 	
 	Machine.autoGrader().finishingCurrentThread();
 
@@ -283,19 +278,17 @@ public class KThread {
      */
     public void join() {
     
-	Lib.debug(dbgThread, "Joining to thread: " + toString());
-	Lib.assertTrue(this != currentThread);
+    	Lib.debug(dbgThread, "Joining to thread: " + toString());
+    	Lib.assertTrue(this != currentThread);
 	
-	
-	Machine.interrupt().disable();
-	this.ready();
-	whowaitsforMe = currentThread;  // Store currentThread into whowaitsforMe
-	whowaitsforMe.ready();          // put whowaitsforMe in readyQueue
-	currentThread.sleep();          // Put currentThread to sleep which then runs whowaitforMe
-	Machine.interrupt().enable();
-	
-	
-  }
+    	Machine.interrupt().disable();  
+    	whowaitsforMe = currentThread;   // Store currentThread into whowaitsforMe
+    	if(status != statusFinished) {   // Sleep if status isn't finished
+    		currentThread.sleep();
+    	}
+    	Machine.interrupt().enable();
+    	
+    }
     /**
      * Create the idle thread. Whenever there are no threads ready to be run,
      * and <tt>runNextThread()</tt> is called, it will run the idle thread. The
