@@ -255,17 +255,11 @@ public class Condition2 {
             // call to join and instead uncomment the loop with
             // yields; the loop has the same effect, but is a kludgy
             // way to do it.
-<<<<<<< HEAD
-            ping.join();
-            //for (int i = 0; i < 50; i++) { KThread.currentThread().yield(); }
-=======
-            // ping.join();
+            //ping.join();
             for (int i = 0; i < 50; i++) { KThread.currentThread().yield(); }
->>>>>>> 77063990f0849648ba25bd04e722867902d193cb
         }
     }
 
     // Invoke Condition2.selfTest() from ThreadedKernel.selfTest()
 
-   
 }
