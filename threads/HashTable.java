@@ -234,13 +234,18 @@ public class HashTable{
     }
 
     void batch(int n_ops, ThreadOperation[] ops){
-
+    	KThread child1 = new KThread( new Runnable () { 
+    		public void run() { 
+    			System.out.println("I (heart) Nachos!"); } });  
     }
 
     public static void main(String[] args){
 
         HashTable HTable = new HashTable(5);
 
+        System.out.println("HashTable runs");
+        HTable.batch(6,null);
+        
         HTable.insert(1, 2);
         // System.out.println("Inserted 1:2");
         HTable.insert(3,4);

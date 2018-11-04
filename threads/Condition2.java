@@ -115,9 +115,33 @@ public class Condition2 {
     		    testLock.release();  // Release lock for another test to run
     		}
     	});
+    	sleepTest.fork(); // Begin execution of sleepTest
     	
-    	sleepTest.fork(); // Begin Execution of sleepTest
+    	
+    	KThread wakeTest = new KThread(new Runnable () {
+    		
+    		public void run() {
+    			testLock.acquire();  // Locks so other test can't run concurrently
+    		    System.out.println("----------Testing sleep Method----------");
+    		    test.wake();
+    		    System.out.println("----------sleep test passed----------");
+    		    testLock.release();  // Release lock for another test to run
+    		}
+    	});
+    	wakeTest.fork(); // Begin Execution of wakeTest
     
+    	
+    	KThread wakeAllTest = new KThread(new Runnable () {
+    		
+    		public void run() {
+    			testLock.acquire();  // Locks so other test can't run concurrently
+    		    System.out.println("----------Testing sleep Method----------");
+    		    test.wakeAll();
+    		    System.out.println("----------sleep test passed----------");
+    		    testLock.release();  // Release lock for another test to run
+    		}
+    	});
+    	wakeAllTest.fork();
     }
     
 
