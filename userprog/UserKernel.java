@@ -4,6 +4,8 @@ import nachos.machine.*;
 import nachos.threads.*;
 import nachos.userprog.*;
 
+import java.util.LinkedList;
+
 /**
  * A kernel that can support multiple user processes.
  */
@@ -24,6 +26,14 @@ public class UserKernel extends ThreadedKernel {
 
 	console = new SynchConsole(Machine.console());
 	
+	processIDSem = new Semaphore(1);
+	freePagesSem = new Semaphore(1);
+
+	//create list of free pages
+	for (int i = 0; i < Machine.processor().getNumPhysPages(); i++) {
+	    freePages.add(i);
+	}
+
 	Machine.processor().setExceptionHandler(new Runnable() {
 		public void run() { exceptionHandler(); }
 	    });
@@ -94,9 +104,8 @@ public class UserKernel extends ThreadedKernel {
 
 	UserProcess process = UserProcess.newUserProcess();
 	
-	String shellProgram = Machine.getShellProgramName();	
+	String shellProgram = Machine.getShellProgramName();
 	Lib.assertTrue(process.execute(shellProgram, new String[] { }));
-
 	KThread.currentThread().finish();
     }
 
@@ -112,4 +121,11 @@ public class UserKernel extends ThreadedKernel {
 
     // dummy variables to make javac smarter
     private static Coff dummy1 = null;
+
+    public static int newProcessID = 0;
+
+    public static Semaphore processIDSem;
+    public static Semaphore freePagesSem;
+
+    public static LinkedList<Integer> freePages = new LinkedList<Integer>();;
 }
