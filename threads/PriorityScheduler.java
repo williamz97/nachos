@@ -141,20 +141,21 @@ public class PriorityScheduler extends Scheduler {
 		public KThread nextThread() {
 			Lib.assertTrue(Machine.interrupt().disabled());
 			ThreadState ts = peekNextThread();
-			LinkedList curr_waiters_list = ts.waiterList;
-
-
-			// delete this ts from waiter list
-			ts.waiterList = new_waiter_list; //new_waiter_list = curr_waiters_list + rowner's waiters_list - ts.threads
-
-			//this.resourceOwner = this;
-			//aquire();
+			// GET WAITERS LIST OF NEXT THREAD
+			LinkedList nxt_thread_waiters_list = ts.waiterList;
+			// GET WAITER LIST OF CURRENT THREAD
+			LinkedList rowner_waiters_list = getThreadState(resourceOwner).waiterList ;			
+			// DELETE NEXT THREAD FROM CURRENT WAITERS LIST	
+			rowner_waiters_list.remove(ts.thread);
+			// MAKE NEXT THREAD THE OWNER 
+			acquire(ts.thread);
+			// ADD UPDATED CURRENT THREAD WAITERS LIST TO NEXT THREAD WAITERS LIST
+			for(int i = 0; i < rowner_waiters_list.size(); i++){
+				nxt_thread_waiters_list.push(rowner_waiters_list.get(i));
+			}
 
 			return null;
 		}
-		// RECURSIVELY CHECK THE EP FOR ALL
-
-		// ADD THIS AS RO AND REMOVE FROM ITS OWN WAIT QUEUE
 
 		/**
 		 * Return the next thread that <tt>nextThread()</tt> would return,
@@ -311,7 +312,6 @@ public class PriorityScheduler extends Scheduler {
 		 * @see nachos.threads.ThreadQueue#nextThread
 		 */
 		public void acquire(PriorityQueue waitQueue) {
-
 			waitQueue.resourceOwner = thread;
 		}
 
